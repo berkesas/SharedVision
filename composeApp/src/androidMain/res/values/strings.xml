@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translatable="false">Shared Vision</string>
+    <string name="app_description" translatable="true">App to share open-source vision models with the world</string>
+</resources>

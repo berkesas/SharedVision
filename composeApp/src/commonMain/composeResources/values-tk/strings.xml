@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigasiýa -->
+    <string name="home">Baş sahypa</string>
+    <string name="models">Model</string>
+    <string name="profile">Profil</string>
+    <string name="settings">Sazlamalar</string>
+    <string name="camera">Kamera</string>
+    <string name="text">Tekst</string>
+    <string name="image">Surat</string>
+    <!-- Baş sahypa ekrany -->
+    <string name="home_screen">Baş sahypa ekrany</string>
+    <string name="welcome_to_home">Baş menýu hoş geldiňiz!</string>
+    <string name="home_item">Baş sahypa elementi</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_screen">Sazlamalar</string>
+    <string name="select_language">Dil saýla</string>
+    <string name="language">Programma dili</string>
+    <string name="labels_language">Tanamagyň dili</string>
+    <string name="select_labels_language">Tanamagyň dilini saýlaň</string>
+    <string name="voice_language">Sözleýiş dili</string>
+    <string name="select_voice_language">Sözleýiş dilini saýlaň</string>
+    <string name="enabled">Işledilen</string>
+    <string name="disabled">Öçürilen</string>
+    <string name="automatic_read_interval">Awtomatik okamagyň aralygy (sekunt)</string>
+    <string name="text_to_speech">Sözleýiş sintezi</string>
+    <string name="system_default">Ulgamyň dili</string>
+    <string name="select_automatic_read_interval">Awtomatik okamagyň aralygyny saýlaň</string>
+
+    <!-- Profil ekrany -->
+    <string name="profile_screen">Profil ekrany</string>
+    <string name="user_profile_info">Ulanyjy profili barada maglumat</string>
+    <string name="name">Ady</string>
+    <string name="email">E-poçta</string>
+    <string name="phone">Telefon</string>
+    <string name="location">Ýerleşýän ýeri</string>
+    <string name="edit_profile">Profili redaktirlemek</string>
+    <string name="last_used">Iň soňky ulanylan wagty</string>
+
+    <!-- Model dolandyryş ekrany - diňe UI ýazgylar -->
+    <string name="tensorflow_models">TensorFlow Lite modelleri</string>
+    <string name="models_downloaded">Ýüklendi: %1$d / %2$d model</string>
+    <string name="storage_used">Ulanylan ýat</string>
+    <string name="storage_available">Elýeterli: %1$s / %2$s</string>
+    <string name="add_model">Model goş</string>
+    <string name="all">Hemmesi</string>
+    <string name="downloaded">Göçürip alnanlar</string>
+    <string name="available">Elýeterliler</string>
+    <string name="recently_used">Ýakynda ulanylan</string>
+    <string name="downloading">Ýüklenýär</string>
+    <string name="size">Ölçegi</string>
+    <string name="accuracy">Takyklyk</string>
+    <string name="version">Wersiýa</string>
+    <string name="download">Göçürip al</string>
+    <string name="delete">Poz</string>
+    <string name="cancel">Goýbolsun et</string>
+    <string name="info">Maglumat</string>
+    <string name="add_custom_model">Ýörite model goş</string>
+    <string name="model_name">Model ady</string>
+    <string name="description">Düşündiriş</string>
+    <string name="download_url">Ýükleme URL</string>
+    <string name="add">Goş</string>
+    <string name="custom_model">Ýörite model</string>
+    <string name="days_ago">%1$d gün öň</string>
+    <string name="downloading_progress">Ýüklenýär... %1$d%%</string>
+    <string name="select_model">Model saýlaň</string>
+
+    <!-- ModelRunnerScreen strings -->
+    <string name="processing">Gaýtadan işlenilýär...</string>
+    <string name="loading_model">Klassifikasiýa modeli ýüklenýär...</string>
+    <string name="camera_permission_required">Klassifikasiýa üçin kamera rugsady gerek</string>
+    <string name="point_camera">Tanamak üçin kamerany obýekte gönükdiriň</string>
+    <string name="confidence">Ynam derejesi</string>
+    <string name="top_predictions">Iň ýokary 3 çaklama:</string>
+    <string name="prediction_item">%1$d. %2$s</string>
+    <string name="percentage">%d%%</string>
+    <string name="mode_manual">El bilen</string>
+    <string name="mode_automatic">Awto.</string>
+    <string name="recognize">Tanamak</string>
+    <string name="camera_permission_message">Suraty klassifikasiýa etmek üçin kamera rugsady gerek.</string>
+    <string name="grant_camera_permission">Kamera rugsat ber</string>
+    <string name="classification_failed">Klassifikasiýa başa barmady</string>
+
+    <!-- Goşmaça setirler -->
+    <string name="of_models_downloaded">%1$d modelden näçesi ýüklendi</string>
+    <string name="mb_of_gb_available">Elýeterli: %1$s / %2$s</string>
+    <string name="percentage_accuracy">%1$d%%</string>
+
+    <!-- Faýl ölçegleri -->
+    <string name="bytes">B</string>
+    <string name="kilobytes">KB</string>
+    <string name="megabytes">MB</string>
+    <string name="gigabytes">GB</string>
+
+    <string name="no_text_recognized">Hiç hili tekst tanalmady</string>
+    <string name="recognizing">Tanalýar...</string>
+    <string name="stop_reading">Okamagy duruz</string>
+    <string name="read_text">Teksti oka</string>
+    <string name="tts_off">Sözleýiş sintezi sazlamalarda öçürilen</string>
+</resources>

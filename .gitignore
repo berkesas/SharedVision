@@ -1,0 +1,93 @@
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+.idea
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+node_modules/
+
+# Built application files
+*.apk
+*.ap_
+*.aab
+*.ipa
+
+# Files for the Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+
+# Gradle files
+.gradle/
+build/
+*/build/
+local.properties
+.gradle-enterprise/
+
+# Local configuration files
+.idea/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+.project
+.classpath
+.settings/
+.vscode/
+
+# Log Files
+*.log
+
+# Kotlin Multiplatform specific
+# iOS specific
+.swiftpm/
+DerivedData/
+*.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcshareddata/
+*.xcodeproj/project.xcworkspace/xcshareddata/
+*.playground/
+*.build/
+*.buildlog
+*.dSYM/
+*.o
+*.swiftdoc
+*.swiftmodule
+*.pcm
+*.pch
+*.s
+*.ll
+*.hmap
+*.modulemap
+*.gch
+*.framework/
+*.app/
+*.xctest/
+*.bundle/
+*.dylib
+*.so
+*.a
+*.lib
+*.dll
+
+# Android specific
+captures/
+proguard/
+
+# Other
+# Add any other files or directories that should be ignored based on your project's specific needs

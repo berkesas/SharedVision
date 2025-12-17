@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Навигация -->
+    <string name="home">Главная</string>
+    <string name="models">Модели</string>
+    <string name="profile">Профиль</string>
+    <string name="settings">Настройки</string>
+    <string name="camera">Камера</string>
+    <string name="image">Изображение</string>
+    <string name="text">Текст</string>
+    <!-- Главный экран -->
+    <string name="home_screen">Главный экран</string>
+    <string name="welcome_to_home">Добро пожаловать в главное меню!</string>
+    <string name="home_item">Элемент главной страницы</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_screen">Настройки</string>
+    <string name="select_language">Выбрать язык</string>
+    <string name="language">Язык приложения</string>
+    <string name="labels_language">Язык распознавания</string>
+    <string name="select_labels_language">Выберите язык распознавания</string>
+    <string name="voice_language">Язык синтеза речи</string>
+    <string name="select_voice_language">Выберите язык синтеза речи</string>
+    <string name="enabled">Включено</string>
+    <string name="disabled">Отключено</string>
+    <string name="automatic_read_interval">Интервал автоматического чтения (секунды)</string>
+    <string name="text_to_speech">Синтез речи</string>
+    <string name="system_default">Язык системы</string>
+    <string name="select_automatic_read_interval">Выберите интервал автоматического чтения</string>
+
+    <!-- Экран профиля -->
+    <string name="profile_screen">Экран профиля</string>
+    <string name="user_profile_info">Информация профиля пользователя</string>
+    <string name="name">Имя</string>
+    <string name="email">Электронная почта</string>
+    <string name="phone">Телефон</string>
+    <string name="location">Местоположение</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="last_used">Последнее использование</string>
+
+    <!-- Экран управления моделями - только UI подписи -->
+    <string name="tensorflow_models">Модели TensorFlow Lite</string>
+    <string name="models_downloaded">Загружено моделей: %1$d из %2$d</string>
+    <string name="storage_used">Использовано памяти</string>
+    <string name="storage_available">Доступно: %1$s из %2$s</string>
+    <string name="add_model">Добавить модель</string>
+    <string name="all">Все</string>
+    <string name="downloaded">Загруженные</string>
+    <string name="available">Доступные</string>
+    <string name="recently_used">Недавно использованные</string>
+    <string name="downloading">Загрузка</string>
+    <string name="size">Размер</string>
+    <string name="accuracy">Точность</string>
+    <string name="version">Версия</string>
+    <string name="download">Скачать</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+    <string name="info">Инфо</string>
+    <string name="add_custom_model">Добавить пользовательскую модель</string>
+    <string name="model_name">Название модели</string>
+    <string name="description">Описание</string>
+    <string name="download_url">URL для скачивания</string>
+    <string name="add">Добавить</string>
+    <string name="custom_model">Пользовательская модель</string>
+    <string name="days_ago">%1$d дн. назад</string>
+    <string name="downloading_progress">Загрузка... %1$d%%</string>
+    <string name="select_model">Выбрать модель</string>
+
+    <!-- ModelRunnerScreen strings -->
+    <string name="processing">Обработка...</string>
+    <string name="loading_model">Загрузка модели классификации...</string>
+    <string name="camera_permission_required">Для классификации требуется разрешение на использование камеры</string>
+    <string name="point_camera">Наведите камеру на объект для распознавания</string>
+    <string name="confidence">Достоверность</string>
+    <string name="top_predictions">Топ-3 результатов:</string>
+    <string name="prediction_item">%1$d. %2$s</string>
+    <string name="percentage">%d%%</string>
+    <string name="mode_manual">Ручной</string>
+    <string name="mode_automatic">Авто.</string>
+    <string name="recognize">Распознать</string>
+    <string name="camera_permission_message">Для классификации изображений требуется разрешение на использование камеры.</string>
+    <string name="grant_camera_permission">Предоставить доступ к камере</string>
+    <string name="classification_failed">Классификация не удалась</string>
+
+    <!-- Дополнительные строки -->
+    <string name="of_models_downloaded">из %1$d моделей загружено</string>
+    <string name="mb_of_gb_available">%1$s из %2$s доступно</string>
+    <string name="percentage_accuracy">%1$d%%</string>
+
+    <!-- Размеры файлов -->
+    <string name="bytes">Б</string>
+    <string name="kilobytes">КБ</string>
+    <string name="megabytes">МБ</string>
+    <string name="gigabytes">ГБ</string>
+
+    <string name="no_text_recognized">Текст не распознан</string>
+    <string name="recognizing">Распознавание...</string>
+    <string name="stop_reading">Остановить чтение</string>
+    <string name="read_text">Прочитать текст</string>
+    <string name="tts_off">Cинтез речи отключен в настройках</string>
+</resources>

@@ -1,0 +1,12 @@
+100 manats face
+100 manats back
+10 manats face
+10 manats back
+1 manats face
+1 manats back
+20 manats face
+20 manats back
+50 manats face
+50 manats back
+5 manats face
+5 manats back
