@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 expect class CameraImage {
     fun close()
     fun toBitmap(): ImageBitmap
+    fun toJpegByteArray(quality: Int = 100): ByteArray
 }
 
 /**

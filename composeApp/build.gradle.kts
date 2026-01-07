@@ -35,7 +35,7 @@ kotlin {
             implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
             implementation("androidx.activity:activity-compose:1.8.1")
 
-            implementation("com.google.mlkit:text-recognition:16.0.0")
+            implementation("com.google.mlkit:text-recognition:16.0.1")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
             implementation(compose.material3) // already present in commonMain, can also be here
@@ -43,11 +43,11 @@ kotlin {
 
 
             // Camera dependencies
-            implementation("androidx.camera:camera-core:1.3.1")
-            implementation("androidx.camera:camera-camera2:1.3.1")
-            implementation("androidx.camera:camera-lifecycle:1.3.1")
-            implementation("androidx.camera:camera-view:1.3.1")
-            implementation("androidx.compose.ui:ui-viewbinding:1.5.4")
+            implementation("androidx.camera:camera-core:1.4.1")
+            implementation("androidx.camera:camera-camera2:1.4.1")
+            implementation("androidx.camera:camera-lifecycle:1.4.1")
+            implementation("androidx.camera:camera-view:1.4.1")
+            implementation("androidx.compose.ui:ui-viewbinding:1.7.6")
 
             // Permissions
             implementation("com.google.accompanist:accompanist-permissions:0.32.0")
@@ -71,7 +71,11 @@ kotlin {
             implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
             // For TensorFlow Lite (when you implement the actual functionality)
-            implementation("org.tensorflow:tensorflow-lite:2.17.0")
+//            implementation("org.tensorflow:tensorflow-lite:2.17.0")
+            implementation("com.google.ai.edge.litert:litert:1.4.0")
+            implementation("com.google.ai.edge.litert:litert-api:1.4.0")
+            implementation("com.google.ai.edge.litert:litert-support:1.4.0")
+            implementation("com.google.ai.edge.litert:litert-metadata:1.4.0")
 
             // For file downloading and storage
             implementation("io.ktor:ktor-client-core:${ktorVersion}")
@@ -97,14 +101,18 @@ android {
         applicationId = "com.scinforma.sharedvision"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 4
-        versionName = "1.1"
+        versionCode = 8
+        versionName = "1.2"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
+
     buildTypes {
         getByName("release") {
             // Enables code-related app optimization.

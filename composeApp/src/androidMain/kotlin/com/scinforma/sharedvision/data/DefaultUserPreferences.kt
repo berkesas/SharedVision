@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class DefaultLanguagePreferences : ILanguagePreferences {
+class DefaultUserPreferences : IUserPreferences {
     private val _selectedLanguageFlow = MutableStateFlow<String?>(null)
     override val selectedLanguageFlow: StateFlow<String?> = _selectedLanguageFlow.asStateFlow()
 
@@ -22,6 +22,12 @@ class DefaultLanguagePreferences : ILanguagePreferences {
 
     private val _voiceLanguageFlow = MutableStateFlow("en-US")
     override val voiceLanguageFlow: StateFlow<String> = _voiceLanguageFlow.asStateFlow()
+
+    private val _predictionThresholdFlow = MutableStateFlow(20L)
+    override val predictionThresholdFlow: StateFlow<Long> = _predictionThresholdFlow.asStateFlow()
+
+    private val _accessCodeFlow = MutableStateFlow("")
+    override val accessCodeFlow: StateFlow<String> = _accessCodeFlow.asStateFlow()
 
     override fun getSelectedLanguage(): String? = null
 
@@ -57,5 +63,17 @@ class DefaultLanguagePreferences : ILanguagePreferences {
 
     override fun setVoiceLanguage(languageCode: String) {
         _voiceLanguageFlow.value = languageCode
+    }
+
+    override fun getPredictionThreshold(): Long = 20L
+
+    override fun setPredictionThreshold(threshold: Long) {
+        _predictionThresholdFlow.value = threshold
+    }
+
+    override fun getAccessCode(): String = ""
+
+    override fun setAccessCode(accessCode: String) {
+        _accessCodeFlow.value = accessCode
     }
 }

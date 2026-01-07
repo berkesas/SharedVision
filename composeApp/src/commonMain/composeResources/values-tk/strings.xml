@@ -27,6 +27,8 @@
     <string name="text_to_speech">Sözleýiş sintezi</string>
     <string name="system_default">Ulgamyň dili</string>
     <string name="select_automatic_read_interval">Awtomatik okamagyň aralygyny saýlaň</string>
+    <string name="prediction_threshold">Talap edilýän ynamlylyk derejesi</string>
+    <string name="access_code">Giriş kody</string>
 
     <!-- Profil ekrany -->
     <string name="profile_screen">Profil ekrany</string>
@@ -81,6 +83,9 @@
     <string name="camera_permission_message">Suraty klassifikasiýa etmek üçin kamera rugsady gerek.</string>
     <string name="grant_camera_permission">Kamera rugsat ber</string>
     <string name="classification_failed">Klassifikasiýa başa barmady</string>
+    <string name="send_picture">Suraty iber</string>
+    <string name="upload_success">Surat iberildi</string>
+    <string name="upload_failed">Iberip bolmady</string>
 
     <!-- Goşmaça setirler -->
     <string name="of_models_downloaded">%1$d modelden näçesi ýüklendi</string>
@@ -98,4 +103,6 @@
     <string name="stop_reading">Okamagy duruz</string>
     <string name="read_text">Teksti oka</string>
     <string name="tts_off">Sözleýiş sintezi sazlamalarda öçürilen</string>
+    <string name="confidence_insufficient">Ynamlylyk derejesi pes</string>
+
 </resources>

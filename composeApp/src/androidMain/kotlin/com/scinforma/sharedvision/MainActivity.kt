@@ -6,35 +6,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.scinforma.sharedvision.data.DefaultLanguagePreferences
-import com.scinforma.sharedvision.data.ILanguagePreferences
-import com.scinforma.sharedvision.data.LanguagePreferences
+import com.scinforma.sharedvision.data.DefaultUserPreferences
+import com.scinforma.sharedvision.data.IUserPreferences
+import com.scinforma.sharedvision.data.UserPreferences
 import com.scinforma.sharedvision.localization.LocaleHelper
 import com.scinforma.sharedvision.ml.ModelManager
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 class MainActivity : ComponentActivity() {
-    private lateinit var languagePreferences: ILanguagePreferences
+    private lateinit var userPreferences: IUserPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        languagePreferences = LanguagePreferences(this)
+        userPreferences = UserPreferences(this)
 
         // Get current model from preferences
-        val currentModel = languagePreferences.getCurrentModel()
-        val labelLanguage = languagePreferences.getLabelLanguage()
+        val currentModel = userPreferences.getCurrentModel()
+        val labelLanguage = userPreferences.getLabelLanguage()
 
         // Initialize ModelManager once when activity is created
         ModelManager.initialize(this,currentModel, labelLanguage)
 
         setContent {
-                App(languagePreferences)
+                App(userPreferences)
         }
     }
 
@@ -48,7 +43,7 @@ class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
         val context = newBase ?: return super.attachBaseContext(newBase)
-        val prefs = LanguagePreferences(context)
+        val prefs = UserPreferences(context)
         val languageCode = prefs.getSelectedLanguage()
         super.attachBaseContext(LocaleHelper.setLocale(context, languageCode))
     }
@@ -57,5 +52,5 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    App(languagePreferences = DefaultLanguagePreferences())
+    App(userPreferences = DefaultUserPreferences())
 }

@@ -13,9 +13,9 @@ object LocaleHelper {
     fun setLocale(context: Context, languageCode: String?): Context {
         val locale = when (languageCode) {
             null -> getSystemLocale()
-            "en-US" -> Locale("en", "US")
-            "ru-RU" -> Locale("ru", "RU")
-            "tk-TM" -> Locale("tk", "TM")
+            "en-US" -> Locale.Builder().setLanguage("en").setRegion("US").build()
+            "ru-RU" -> Locale.Builder().setLanguage("ru").setRegion("RU").build()
+            "tk-TM" -> Locale.Builder().setLanguage("tk").setRegion("TM").build()
             else -> getSystemLocale()
         }
 

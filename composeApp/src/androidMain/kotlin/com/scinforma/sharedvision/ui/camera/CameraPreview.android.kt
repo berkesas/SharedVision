@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import java.io.ByteArrayOutputStream
@@ -181,6 +181,86 @@ actual class CameraImage(private val imageProxy: ImageProxy) {
             bitmap.eraseColor(android.graphics.Color.BLUE)
             return bitmap
         }
+    }
+
+    /**
+     * Convert image to raw JPEG bytes without any processing
+     */
+    actual fun toJpegByteArray(quality: Int): ByteArray {
+        return when (imageProxy.format) {
+            ImageFormat.JPEG -> {
+                // Already JPEG - return raw bytes directly
+                val buffer = imageProxy.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.rewind()
+                buffer.get(bytes)
+                bytes
+            }
+            ImageFormat.YUV_420_888 -> {
+                // Convert YUV to JPEG
+                convertYuvToJpegBytes(quality)
+            }
+            PixelFormat.RGBA_8888 -> {
+                // Convert RGBA to JPEG
+                convertRgbaToJpegBytes(quality)
+            }
+            else -> {
+                Log.w(TAG, "Unsupported format for JPEG conversion: ${imageProxy.format}")
+                ByteArray(0)
+            }
+        }
+    }
+
+    private fun convertYuvToJpegBytes(quality: Int): ByteArray {
+        val width = imageProxy.width
+        val height = imageProxy.height
+
+        val yuvBytes = ByteArray(width * height * 3 / 2)
+
+        // Extract Y plane
+        val yBuffer = imageProxy.planes[0].buffer
+        val yBytes = ByteArray(yBuffer.remaining())
+        yBuffer.rewind()
+        yBuffer.get(yBytes)
+        System.arraycopy(yBytes, 0, yuvBytes, 0, yBytes.size)
+
+        // Extract and interleave UV planes
+        val uBuffer = imageProxy.planes[1].buffer
+        val vBuffer = imageProxy.planes[2].buffer
+        val uvPixelStride = imageProxy.planes[1].pixelStride
+
+        uBuffer.rewind()
+        vBuffer.rewind()
+
+        var pos = yBytes.size
+        for (i in 0 until uBuffer.remaining() step uvPixelStride) {
+            yuvBytes[pos++] = vBuffer.get(i)
+            yuvBytes[pos++] = uBuffer.get(i)
+        }
+
+        // Convert to JPEG
+        val yuvImage = YuvImage(yuvBytes, ImageFormat.NV21, width, height, null)
+        val outputStream = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, width, height), quality, outputStream)
+
+        return outputStream.toByteArray()
+    }
+
+    private fun convertRgbaToJpegBytes(quality: Int): ByteArray {
+        val buffer = imageProxy.planes[0].buffer
+        buffer.rewind()
+        val bitmap = Bitmap.createBitmap(
+            imageProxy.width,
+            imageProxy.height,
+            Bitmap.Config.ARGB_8888
+        )
+        bitmap.copyPixelsFromBuffer(buffer)
+
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+        bitmap.recycle()
+
+        return outputStream.toByteArray()
     }
 }
 

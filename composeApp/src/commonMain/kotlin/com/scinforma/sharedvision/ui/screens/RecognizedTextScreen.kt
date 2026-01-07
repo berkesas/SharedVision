@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.scinforma.sharedvision.data.ILanguagePreferences
+import com.scinforma.sharedvision.data.IUserPreferences
 import com.scinforma.sharedvision.services.TTSManager
 import com.scinforma.sharedvision.utils.Logger
 import com.scinforma.sharedvision.generated.resources.*
@@ -25,7 +26,7 @@ private const val TAG = "RecognizedTextScreen"
 @Composable
 fun RecognizedTextScreen(
     navController: NavController,
-    languagePreferences: ILanguagePreferences
+    userPreferences: IUserPreferences
 ) {
     // Get recognized text from navigation
     val recognizedText = navController.previousBackStackEntry
@@ -33,7 +34,7 @@ fun RecognizedTextScreen(
         ?.get<String>("recognized_text") ?: ""
 
     // Collect TTS settings
-    val ttsEnabled by languagePreferences.ttsEnabledFlow.collectAsState(initial = true)
+    val ttsEnabled by userPreferences.ttsEnabledFlow.collectAsState(initial = true)
 
     var isSpeaking by remember { mutableStateOf(false) }
 
@@ -55,7 +56,7 @@ fun RecognizedTextScreen(
                         navController.popBackStack()
                     }) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }

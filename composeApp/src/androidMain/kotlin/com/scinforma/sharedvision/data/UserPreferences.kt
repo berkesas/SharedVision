@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class LanguagePreferences(context: Context) : ILanguagePreferences {
+class UserPreferences(context: Context) : IUserPreferences {
 
     companion object {
         private const val PREFS_NAME = "language_preferences"
@@ -17,11 +17,20 @@ class LanguagePreferences(context: Context) : ILanguagePreferences {
         private const val KEY_LABEL_LANGUAGE = "label_language"
         private const val KEY_VOICE_LANGUAGE = "voice_language"
 
+        private const val KEY_ACCESS_CODE = "access_code"
+
+
+        private const val KEY_PREDICTION_THRESHOLD = "prediction_threshold"
+
         private const val DEFAULT_AUTO_READ_INTERVAL = 5000L
         private const val DEFAULT_TTS_ENABLED = false
         private const val DEFAULT_MODEL = "manat"
         private const val DEFAULT_LABEL_LANGUAGE = "en"
         private const val DEFAULT_VOICE_LANGUAGE = "en-US"
+        private const val DEFAULT_PREDICTION_THRESHOLD = 20L
+
+        private const val DEFAULT_ACCESS_CODE = ""
+
     }
 
     private val sharedPreferences: SharedPreferences =
@@ -44,6 +53,12 @@ class LanguagePreferences(context: Context) : ILanguagePreferences {
 
     private val _voiceLanguageFlow = MutableStateFlow(getVoiceLanguage())
     override val voiceLanguageFlow: StateFlow<String> = _voiceLanguageFlow.asStateFlow()
+
+    private val _predictionThresholdFlow = MutableStateFlow(getPredictionThreshold())
+    override val predictionThresholdFlow: StateFlow<Long> = _predictionThresholdFlow.asStateFlow()
+
+    private val _accessCodeFlow = MutableStateFlow(getAccessCode())
+    override val accessCodeFlow: StateFlow<String> = _accessCodeFlow.asStateFlow()
 
     override fun getSelectedLanguage(): String? {
         return sharedPreferences.getString(KEY_SELECTED_LANGUAGE, null)
@@ -119,5 +134,29 @@ class LanguagePreferences(context: Context) : ILanguagePreferences {
             apply()
         }
         _voiceLanguageFlow.value = languageCode
+    }
+
+    override fun getPredictionThreshold(): Long {
+        return sharedPreferences.getLong(KEY_PREDICTION_THRESHOLD, DEFAULT_PREDICTION_THRESHOLD)
+    }
+
+    override fun setPredictionThreshold(threshold: Long) {
+        sharedPreferences.edit().apply {
+            putLong(KEY_PREDICTION_THRESHOLD, threshold)
+            apply()
+        }
+        _predictionThresholdFlow.value = threshold
+    }
+
+    override fun getAccessCode(): String {
+        return sharedPreferences.getString(KEY_ACCESS_CODE, DEFAULT_ACCESS_CODE) ?: DEFAULT_VOICE_LANGUAGE
+    }
+
+    override fun setAccessCode(accessCode: String) {
+        sharedPreferences.edit().apply {
+            putString(KEY_ACCESS_CODE, accessCode)
+            apply()
+        }
+        _accessCodeFlow.value = accessCode
     }
 }

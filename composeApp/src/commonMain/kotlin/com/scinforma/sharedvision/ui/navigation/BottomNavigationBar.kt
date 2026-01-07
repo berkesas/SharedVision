@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.scinforma.sharedvision.data.ILanguagePreferences
+import com.scinforma.sharedvision.data.IUserPreferences
 import com.scinforma.sharedvision.ui.icons.getImageIcon
 import com.scinforma.sharedvision.ui.icons.getHomeIcon
 import com.scinforma.sharedvision.ui.icons.getPersonIcon
@@ -28,7 +28,7 @@ import com.scinforma.sharedvision.generated.resources.image
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun BottomNavigationBar(navController: NavController,languagePreferences: ILanguagePreferences) {
+fun BottomNavigationBar(navController: NavController,userPreferences: IUserPreferences) {
     val items = listOf(
         NavigationItem("home", stringResource(Res.string.home), getHomeIcon()),
         NavigationItem("runner", stringResource(Res.string.image), getImageIcon()),  // NEW TAB

@@ -27,6 +27,8 @@
     <string name="text_to_speech">Синтез речи</string>
     <string name="system_default">Язык системы</string>
     <string name="select_automatic_read_interval">Выберите интервал автоматического чтения</string>
+    <string name="prediction_threshold">Требуемый уровень уверенности</string>
+    <string name="access_code">Код доступа</string>
 
     <!-- Экран профиля -->
     <string name="profile_screen">Экран профиля</string>
@@ -81,6 +83,9 @@
     <string name="camera_permission_message">Для классификации изображений требуется разрешение на использование камеры.</string>
     <string name="grant_camera_permission">Предоставить доступ к камере</string>
     <string name="classification_failed">Классификация не удалась</string>
+    <string name="send_picture">Отправить изображение</string>
+    <string name="upload_success">Изображение отправлено</string>
+    <string name="upload_failed">Ошибка в отправке</string>
 
     <!-- Дополнительные строки -->
     <string name="of_models_downloaded">из %1$d моделей загружено</string>
@@ -98,4 +103,5 @@
     <string name="stop_reading">Остановить чтение</string>
     <string name="read_text">Прочитать текст</string>
     <string name="tts_off">Cинтез речи отключен в настройках</string>
+    <string name="confidence_insufficient">Низкая уверенность</string>
 </resources>

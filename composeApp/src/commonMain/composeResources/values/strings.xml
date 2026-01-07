@@ -28,6 +28,8 @@
     <string name="text_to_speech">Text-to-speech</string>
     <string name="system_default">System default</string>
     <string name="select_automatic_read_interval">Select automatic read interval</string>
+    <string name="prediction_threshold">Required confidence level</string>
+    <string name="access_code">Access code</string>
 
     <!-- Profile Screen -->
     <string name="profile_screen">Profile Screen</string>
@@ -82,6 +84,9 @@
     <string name="camera_permission_message">Camera permission is required for image classification.</string>
     <string name="grant_camera_permission">Grant Camera Permission</string>
     <string name="classification_failed">Classification failed</string>
+    <string name="send_picture">Send picture</string>
+    <string name="upload_success">Picture sent</string>
+    <string name="upload_failed">Sending failed</string>
 
     <!-- Additional missing strings -->
     <string name="of_models_downloaded">of %1$d models downloaded</string>
@@ -100,4 +105,5 @@
     <string name="stop_reading">Stop reading</string>
     <string name="read_text">Read text</string>
     <string name="tts_off">Text-to-speech is disabled in settings</string>
+    <string name="confidence_insufficient">Confidence level is low</string>
 </resources>

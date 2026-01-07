@@ -1,5 +1,6 @@
 package com.scinforma.sharedvision.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,39 +8,45 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.scinforma.sharedvision.data.IUserPreferences
+import com.scinforma.sharedvision.generated.resources.Res
+import com.scinforma.sharedvision.generated.resources.camera_permission_message
+import com.scinforma.sharedvision.generated.resources.camera_permission_required
+import com.scinforma.sharedvision.generated.resources.classification_failed
+import com.scinforma.sharedvision.generated.resources.confidence_insufficient
+import com.scinforma.sharedvision.generated.resources.send_picture
+import com.scinforma.sharedvision.generated.resources.grant_camera_permission
+import com.scinforma.sharedvision.generated.resources.loading_model
+import com.scinforma.sharedvision.generated.resources.mode_automatic
+import com.scinforma.sharedvision.generated.resources.mode_manual
+import com.scinforma.sharedvision.generated.resources.point_camera
+import com.scinforma.sharedvision.generated.resources.processing
+import com.scinforma.sharedvision.generated.resources.recognize
+import com.scinforma.sharedvision.generated.resources.upload_success
+import com.scinforma.sharedvision.generated.resources.upload_failed
 import com.scinforma.sharedvision.ml.ClassificationResult
 import com.scinforma.sharedvision.ml.ModelManager
-import com.scinforma.sharedvision.ui.camera.CameraPreview
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import com.scinforma.sharedvision.data.ILanguagePreferences
-import kotlinx.coroutines.launch
-import kotlin.time.ExperimentalTime
-import com.scinforma.sharedvision.utils.Logger
-import com.scinforma.sharedvision.generated.resources.Res
-import org.jetbrains.compose.resources.stringResource
 import com.scinforma.sharedvision.services.TTSManager
-import androidx.compose.ui.platform.LocalContext
-import android.content.Context
-import com.scinforma.sharedvision.generated.resources.classification_failed
-import com.scinforma.sharedvision.generated.resources.processing
-import com.scinforma.sharedvision.generated.resources.confidence
-import com.scinforma.sharedvision.generated.resources.top_predictions
-import com.scinforma.sharedvision.generated.resources.prediction_item
-import com.scinforma.sharedvision.generated.resources.percentage
-import com.scinforma.sharedvision.generated.resources.loading_model
-import com.scinforma.sharedvision.generated.resources.camera_permission_required
-import com.scinforma.sharedvision.generated.resources.point_camera
-import com.scinforma.sharedvision.generated.resources.mode_manual
-import com.scinforma.sharedvision.generated.resources.mode_automatic
-import com.scinforma.sharedvision.generated.resources.recognize
-import com.scinforma.sharedvision.generated.resources.camera_permission_message
-import com.scinforma.sharedvision.generated.resources.grant_camera_permission
+import com.scinforma.sharedvision.ui.camera.CameraPreview
+import com.scinforma.sharedvision.utils.Logger
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import kotlin.time.ExperimentalTime
+
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
+import java.io.ByteArrayOutputStream
+import android.graphics.Bitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 
 private const val TAG = "ModelRunnerScreen"
 
@@ -59,20 +66,25 @@ expect suspend fun saveImageForTesting(context: Any, imageBitmap: ImageBitmap, f
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun ModelRunnerScreen(
-    languagePreferences: ILanguagePreferences, modelPath: String="manat"
+    userPreferences: IUserPreferences, modelPath: String="manat"
 ) {
     val context = LocalContext.current
     var classificationResult by remember { mutableStateOf<ClassificationResult?>(null) }
     var isAutoMode by remember { mutableStateOf(false) }
     var isProcessing by remember { mutableStateOf(false) }
     var currentImageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var currentRawImageBytes by remember { mutableStateOf<ByteArray?>(null) }
     var frameCounter by remember { mutableStateOf(0) }
     var imageCounter by remember { mutableStateOf(0) }
     val manualCaptureRequested = remember { mutableStateOf(false) }
 
+    //picture upload
+    var isUploading by remember { mutableStateOf(false) }
+    var uploadResult by remember { mutableStateOf<Boolean?>(null) }
+
     // Collect settings
-    val autoReadInterval by languagePreferences.autoReadIntervalFlow.collectAsState(initial = 2000L)
-    val ttsEnabled by languagePreferences.ttsEnabledFlow.collectAsState(initial = true)
+    val autoReadInterval by userPreferences.autoReadIntervalFlow.collectAsState(initial = 2000L)
+    val ttsEnabled by userPreferences.ttsEnabledFlow.collectAsState(initial = true)
 
     // Track last classification time
     var lastClassificationTime by remember { mutableStateOf(0L) }
@@ -81,6 +93,14 @@ fun ModelRunnerScreen(
 
     // Get localized strings
     val classificationFailedText = stringResource(Res.string.classification_failed)
+
+    //send picture feature
+    // Add snackbar host state
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Add string resources
+    val uploadSuccessText = stringResource(Res.string.upload_success)
+    val uploadFailedText = stringResource(Res.string.upload_failed)
 
     fun performClassification(imageBitmap: ImageBitmap, mode: String){
         Logger.d(TAG, "performClassification called - mode: $mode, isProcessing: $isProcessing")
@@ -129,7 +149,7 @@ fun ModelRunnerScreen(
     LaunchedEffect(Unit) {
         hasCameraPermission = checkCameraPermission(context)
 
-        TTSManager.initialize(context, languagePreferences)
+        TTSManager.initialize(context, userPreferences)
     }
 
     // Permission request launcher
@@ -155,7 +175,7 @@ fun ModelRunnerScreen(
 //        }
 //    }
 
-    val labelLanguage by languagePreferences.labelLanguageFlow.collectAsState(initial = "en")
+    val labelLanguage by userPreferences.labelLanguageFlow.collectAsState(initial = "en")
 
     // Re-initialize ModelManager when modelPath changes
     LaunchedEffect(modelPath, labelLanguage) {
@@ -220,6 +240,9 @@ fun ModelRunnerScreen(
                         onImageCaptured = { cameraImage ->
                             try {
                                 val frameNum = frameCounter + 1
+
+                                // Store raw JPEG bytes BEFORE any processing
+                                currentRawImageBytes = cameraImage.toJpegByteArray(100)
 
                                 // Convert to bitmap and close ImageProxy immediately
                                 val imageBitmap = cameraImage.toBitmap()
@@ -293,40 +316,59 @@ fun ModelRunnerScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     if (classificationResult != null) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = classificationResult!!.topPrediction,
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
+                        val firstPrediction = classificationResult!!.allPredictions.firstOrNull()
 
-                            if (classificationResult!!.allPredictions.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(6.dp))
+                        if (firstPrediction != null && firstPrediction.confidence >= userPreferences.getPredictionThreshold()/100.0f) {
+                            Logger.d(TAG, "Classification result confidence: ${firstPrediction.confidence} - threshold: ${userPreferences.getPredictionThreshold()/100}")
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = classificationResult!!.topPrediction,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
 
-                                classificationResult!!.allPredictions.take(3).forEachIndexed { index, prediction ->
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Text(
-                                            text = "${index + 1}. ${prediction.label}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.9f)
-                                        )
-                                        Text(
-                                            text = "${(prediction.confidence * 100).toInt()}%",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
-                                    if (index < 2) {
-                                        Spacer(modifier = Modifier.height(2.dp))
+                                if (classificationResult!!.allPredictions.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    classificationResult!!.allPredictions.take(3).forEachIndexed { index, prediction ->
+                                        if (prediction.confidence >= userPreferences.getPredictionThreshold()/100.0f) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    text = "${index + 1}. ${prediction.label}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.White.copy(alpha = 0.9f)
+                                                )
+                                                Text(
+                                                    text = "${(prediction.confidence * 100).toInt()}%",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color.White.copy(alpha = 0.7f)
+                                                )
+                                            }
+                                        }
+                                        if (index < 2) {
+                                            Spacer(modifier = Modifier.height(2.dp))
+                                        }
                                     }
                                 }
+                            }
+                        } else {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.confidence_insufficient),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                     } else {
@@ -413,8 +455,86 @@ fun ModelRunnerScreen(
                         Text(stringResource(Res.string.recognize))
                     }
                 }
+
+                val accessCode = userPreferences.getAccessCode()
+                if (!accessCode.isNullOrEmpty() && accessCode.length > 5) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                currentRawImageBytes?.let { rawBytes ->
+                                    coroutineScope.launch {
+                                        isUploading = true
+                                        uploadResult = null
+                                        val success = uploadPicture(
+                                            imageBytes = rawBytes,
+                                            accessCode = accessCode
+                                        )
+                                        uploadResult = success
+                                        isUploading = false
+
+                                        // Show snackbar - TalkBack will announce this
+                                        snackbarHostState.showSnackbar(
+                                            message = if (success) uploadSuccessText else uploadFailedText,
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                }
+                            },
+                            enabled = !isUploading && currentRawImageBytes != null
+                        ) {
+                            if (isUploading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                            Text(stringResource(Res.string.send_picture))
+                        }
+                    }
+                }
             }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+suspend fun uploadPicture(
+    imageBytes: ByteArray,
+    accessCode: String?
+): Boolean {
+    return try {
+        Logger.d(TAG, "uploadPicture called - size: ${imageBytes.size} bytes")
+
+        val client = HttpClient()
+        val response = client.submitFormWithBinaryData(
+            url = "https://sharedvision.scinforma.com/app/api/send_picture",
+            formData = formData {
+                append("image", imageBytes, Headers.build {
+                    append(HttpHeaders.ContentType, "image/jpeg")
+                    append(HttpHeaders.ContentDisposition, "filename=\"capture.jpg\"")
+                })
+                accessCode?.let {
+                    append(FormPart("access_code", it))
+                }
+            }
+        )
+        client.close()
+        response.status.isSuccess()
+    } catch (e: Exception) {
+        Logger.e(TAG, "Failed to upload picture", e)
+        false
     }
 }
 

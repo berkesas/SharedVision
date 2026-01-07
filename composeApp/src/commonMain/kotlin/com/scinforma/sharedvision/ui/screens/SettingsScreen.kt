@@ -1,18 +1,25 @@
 package com.scinforma.sharedvision.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -28,10 +35,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import android.content.Context
-import android.speech.tts.TextToSpeech
-import com.scinforma.sharedvision.data.ILanguagePreferences
+import com.scinforma.sharedvision.data.IUserPreferences
 import com.scinforma.sharedvision.data.Language
 import com.scinforma.sharedvision.data.ReadInterval
 import com.scinforma.sharedvision.generated.resources.*
@@ -86,7 +92,7 @@ object LanguageProvider {
      * Get display name for a label language code
      */
     fun getLabelLanguageDisplayName(languageCode: String): String {
-        return Locale(languageCode).displayLanguage
+        return Locale.forLanguageTag(languageCode).displayLanguage
     }
 
     /**
@@ -100,7 +106,7 @@ object LanguageProvider {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    languagePreferences: ILanguagePreferences,
+    userPreferences: IUserPreferences,
     onLanguageChanged: (String?) -> Unit
 ) {
     val context = LocalContext.current
@@ -110,12 +116,13 @@ fun SettingsScreen(
     var showLabelLanguageDialog by remember { mutableStateOf(false) }
     var showVoiceLanguageDialog by remember { mutableStateOf(false) }
 
-    val currentLanguage by languagePreferences.selectedLanguageFlow.collectAsState()
-    val currentInterval by languagePreferences.autoReadIntervalFlow.collectAsState()
-    val ttsEnabled by languagePreferences.ttsEnabledFlow.collectAsState()
-    val currentLabelLanguage by languagePreferences.labelLanguageFlow.collectAsState(initial = "en")
-    val currentVoiceLanguage by languagePreferences.voiceLanguageFlow.collectAsState(initial = "en-US")
-
+    val currentLanguage by userPreferences.selectedLanguageFlow.collectAsState()
+    val currentInterval by userPreferences.autoReadIntervalFlow.collectAsState()
+    val ttsEnabled by userPreferences.ttsEnabledFlow.collectAsState()
+    val currentLabelLanguage by userPreferences.labelLanguageFlow.collectAsState(initial = "en")
+    val currentVoiceLanguage by userPreferences.voiceLanguageFlow.collectAsState(initial = "en-US")
+    val currentPredictionThreshold by userPreferences.predictionThresholdFlow.collectAsState()
+    val currentAccessCode by userPreferences.accessCodeFlow.collectAsState()
     val systemDefaultText = stringResource(Res.string.system_default)
 
     // Define available languages
@@ -163,7 +170,7 @@ fun SettingsScreen(
 
     val selectedLabelLanguageDisplay = remember(currentLabelLanguage, availableLabelLanguages) {
         availableLabelLanguages.find { it.code == currentLabelLanguage }?.displayName
-            ?: Locale(currentLabelLanguage).displayLanguage
+            ?: Locale.Builder().setLanguage(currentLabelLanguage).build().displayLanguage
     }
 
     val selectedVoiceLanguageDisplay = remember(currentVoiceLanguage, availableVoiceLanguages) {
@@ -182,6 +189,8 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .imePadding()
+                .verticalScroll(rememberScrollState())
         ) {
             // Language Selection Item
             SettingsItem(
@@ -190,7 +199,7 @@ fun SettingsScreen(
                 onClick = { showLanguageDialog = true }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // Label Language Selection Item
             SettingsItem(
@@ -199,7 +208,7 @@ fun SettingsScreen(
                 onClick = { showLabelLanguageDialog = true }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // Voice Language Selection Item
             SettingsItem(
@@ -208,7 +217,7 @@ fun SettingsScreen(
                 onClick = { showVoiceLanguageDialog = true }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // Auto Read Interval Item
             SettingsItem(
@@ -217,7 +226,7 @@ fun SettingsScreen(
                 onClick = { showIntervalDialog = true }
             )
 
-            Divider()
+            HorizontalDivider()
 
             // TTS Toggle Item
             SettingsItemWithSwitch(
@@ -225,11 +234,35 @@ fun SettingsScreen(
                 subtitle = if (ttsEnabled) stringResource(Res.string.enabled) else stringResource(Res.string.disabled),
                 checked = ttsEnabled,
                 onCheckedChange = { enabled ->
-                    languagePreferences.setTtsEnabled(enabled)
+                    userPreferences.setTtsEnabled(enabled)
                 }
             )
 
-            Divider()
+            HorizontalDivider()
+
+            SettingsItemWithTextInput(
+                title = stringResource(Res.string.prediction_threshold),
+                subtitle = "",
+                value = currentPredictionThreshold.toString(),
+                onValueChange = { newValue ->
+                    newValue.toLongOrNull()?.let { userPreferences.setPredictionThreshold(it) }
+                },
+                placeholder = "0-100",
+                unit = "%",
+                inputFieldWidth = 80.dp
+            )
+
+            HorizontalDivider()
+
+            SettingsItemWithTextInput(
+                title = stringResource(Res.string.access_code),
+                subtitle = "",
+                value = currentAccessCode,
+                onValueChange = { newValue ->
+                    userPreferences.setAccessCode(newValue)
+                }
+            )
+
         }
     }
 
@@ -252,7 +285,7 @@ fun SettingsScreen(
             languages = availableLabelLanguages,
             currentLanguage = currentLabelLanguage,
             onLanguageSelected = { selectedCode ->
-                languagePreferences.setLabelLanguage(selectedCode)
+                userPreferences.setLabelLanguage(selectedCode)
                 showLabelLanguageDialog = false
             },
             onDismiss = { showLabelLanguageDialog = false }
@@ -265,7 +298,7 @@ fun SettingsScreen(
             languages = availableVoiceLanguages,
             currentLanguage = currentVoiceLanguage,
             onLanguageSelected = { selectedCode ->
-                languagePreferences.setVoiceLanguage(selectedCode)
+                userPreferences.setVoiceLanguage(selectedCode)
                 showVoiceLanguageDialog = false
             },
             onDismiss = { showVoiceLanguageDialog = false }
@@ -277,7 +310,7 @@ fun SettingsScreen(
             intervals = availableIntervals,
             currentInterval = currentInterval,
             onIntervalSelected = { selectedInterval ->
-                languagePreferences.setAutoReadInterval(selectedInterval)
+                userPreferences.setAutoReadInterval(selectedInterval)
                 showIntervalDialog = false
             },
             onDismiss = { showIntervalDialog = false }
@@ -310,6 +343,51 @@ fun SettingsItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+@Composable
+fun SettingsItemWithTextInput(
+    title: String,
+    subtitle: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String = "",
+    unit: String = "",
+    inputFieldWidth: Dp = 120.dp,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = { Text(placeholder) },
+            keyboardOptions = keyboardOptions,
+            singleLine = true,
+            modifier = Modifier.width(inputFieldWidth)
+        )
+        Text(
+            text = unit,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

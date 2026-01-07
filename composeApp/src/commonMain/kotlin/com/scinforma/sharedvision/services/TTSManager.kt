@@ -3,7 +3,7 @@ package com.scinforma.sharedvision.services
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
-import com.scinforma.sharedvision.data.ILanguagePreferences
+import com.scinforma.sharedvision.data.IUserPreferences
 import com.scinforma.sharedvision.utils.Logger
 import java.util.*
 
@@ -17,12 +17,12 @@ object TTSManager {
     private var tts: TextToSpeech? = null
     private var isInitialized = false
     private val pendingTexts = mutableListOf<String>()
-    private var languagePreferences: ILanguagePreferences? = null
+    private var userPreferences: IUserPreferences? = null
 
     /**
      * Initialize TTS engine
      */
-    fun initialize(context: Context, preferences: ILanguagePreferences? = null) {
+    fun initialize(context: Context, preferences: IUserPreferences? = null) {
         // Check available engines BEFORE initialization
         val tempTts = TextToSpeech(context, null)
         tempTts.engines.forEach { engine ->
@@ -35,7 +35,7 @@ object TTSManager {
             return
         }
 
-        languagePreferences = preferences
+        userPreferences = preferences
 
         Logger.d(TAG, "Initializing TTS")
         tts = TextToSpeech(context.applicationContext) { status ->
@@ -68,8 +68,12 @@ object TTSManager {
                 Logger.d(TAG, "TTS finished speaking: $utteranceId")
             }
 
-            override fun onError(utteranceId: String?) {
-                Logger.e(TAG, "TTS error: $utteranceId")
+            override fun onError(p0: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onError(utteranceId: String?, errorCode: Int) {
+                Logger.e(TAG, "TTS error: $utteranceId, errorCode: $errorCode")
             }
         })
     }
@@ -90,7 +94,7 @@ object TTSManager {
         }
 
         // Get the voice language from preferences
-        val voiceLanguageCode = languagePreferences?.getVoiceLanguage()
+        val voiceLanguageCode = userPreferences?.getVoiceLanguage()
         val targetLocale = if (!voiceLanguageCode.isNullOrBlank()) {
             parseLocale(voiceLanguageCode)
         } else {
@@ -128,9 +132,9 @@ object TTSManager {
         return try {
             val parts = languageCode.replace("-", "_").split("_")
             when (parts.size) {
-                1 -> Locale(parts[0])
-                2 -> Locale(parts[0], parts[1])
-                3 -> Locale(parts[0], parts[1], parts[2])
+                1 -> Locale.Builder().setLanguage(parts[0]).build()
+                2 -> Locale.Builder().setLanguage(parts[0]).setRegion(parts[1]).build()
+                3 -> Locale.Builder().setLanguage(parts[0]).setRegion(parts[1]).setVariant(parts[2]).build()
                 else -> {
                     Logger.w(TAG, "Invalid language code format: $languageCode, using default")
                     Locale.getDefault()
@@ -191,6 +195,6 @@ object TTSManager {
         tts = null
         isInitialized = false
         pendingTexts.clear()
-        languagePreferences = null
+        userPreferences = null
     }
 }

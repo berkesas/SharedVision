@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import android.content.Context
-import com.scinforma.sharedvision.data.ILanguagePreferences
+import com.scinforma.sharedvision.data.IUserPreferences
 import com.scinforma.sharedvision.ml.TextRecognitionManager
 import com.scinforma.sharedvision.services.TTSManager
 import com.scinforma.sharedvision.ui.camera.CameraPreview
@@ -29,7 +29,7 @@ private const val TAG = "TextRecognizerScreen"
 @Composable
 fun TextRecognizerScreen(
     navController: NavController,
-    languagePreferences: ILanguagePreferences
+    userPreferences: IUserPreferences
 ) {
     val context = LocalContext.current as Context
     var isProcessing by remember { mutableStateOf(false) }
@@ -44,7 +44,7 @@ fun TextRecognizerScreen(
     LaunchedEffect(Unit) {
         hasCameraPermission = checkCameraPermission(context)
         // Initialize TTS
-        TTSManager.initialize(context, languagePreferences)
+        TTSManager.initialize(context, userPreferences)
     }
 
     // Permission request launcher
